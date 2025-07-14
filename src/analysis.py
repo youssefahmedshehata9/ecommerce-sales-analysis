@@ -45,11 +45,11 @@ plt.tight_layout()
 plt.show()
 
 # باستخدام Plotly
-fig = px.line(monthly_revenue, x='Month', y='Total',
+fig1 = px.line(monthly_revenue, x='Month', y='Total',
               title='Monthly Revenue Over Time',
               labels={'Total': 'Revenue (£)', 'Month': 'Month'},
               markers=True)
-fig.show()
+fig1.show()
 
 # الإيرادات حسب الدولة (بدون UK)
 country_revenue = df_clean.groupby('Country')['Total'].sum().sort_values(ascending=False).reset_index()
@@ -62,6 +62,12 @@ plt.xlabel('Revenue (£)')
 plt.ylabel('Country')
 plt.tight_layout()
 plt.show()
+fig2 = px.bar(top_countries, x='Total', y='Country', orientation='h',
+              title='🌍 Top 10 Countries by Revenue (Excl. UK)',
+              labels={'Total': 'Revenue (£)', 'Country': 'Country'},
+              color='Total', color_continuous_scale='Viridis')
+fig2.update_layout(yaxis=dict(autorange="reversed"))  # لعكس الترتيب
+fig2.show()
 
 # أكثر المنتجات مبيعًا
 top_products = df_clean.groupby('Description')['Quantity'].sum().sort_values(ascending=False).head(10).reset_index()
@@ -73,6 +79,12 @@ plt.xlabel('Quantity Sold')
 plt.ylabel('Product')
 plt.tight_layout()
 plt.show()
+fig3 = px.bar(top_products, x='Quantity', y='Description', orientation='h',
+              title='🛍️ Top 10 Best-Selling Products',
+              labels={'Quantity': 'Quantity Sold', 'Description': 'Product'},
+              color='Quantity', color_continuous_scale='Magma')
+fig3.update_layout(yaxis=dict(autorange="reversed"))
+fig3.show()
 
 # أعلى العملاء إنفاقًا
 top_customers = df_clean.groupby('Customer ID')['Total'].sum().sort_values(ascending=False).head(10).reset_index()
@@ -87,6 +99,11 @@ plt.tight_layout()
 for i, row in top_customers.iterrows():
     plt.text(i, row['Total'] + 50, f"£{row['Total']:.0f}", ha='center', fontsize=9)
 plt.show()
+fig4 = px.bar(top_customers, x='Customer ID', y='Total',
+              title='👤 Top 10 Customers by Revenue',
+              labels={'Total': 'Total Spend (£)', 'Customer ID': 'Customer'},
+              color='Total', color_continuous_scale='Bluered')
+fig4.show()
 
 # 🔥 Heatmap للمبيعات حسب اليوم 🔥
 # استخراج يوم الأسبوع
@@ -97,6 +114,10 @@ order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
 
 # تجميع الإيرادات حسب اليوم
 daily_revenue = df_clean.groupby('Day')['Total'].sum().reindex(order).reset_index()
+fig5 = px.density_heatmap(daily_revenue, x='Day', y='Day', z='Total',
+                          title='🔥 Total Revenue by Day of the Week',
+                          color_continuous_scale='YlGnBu')
+fig5.show()
 
 # تحويل البيانات لهيكل heatmap
 heatmap_data = daily_revenue.pivot_table(index='Day', values='Total')
